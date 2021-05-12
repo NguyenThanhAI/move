@@ -1,3 +1,41 @@
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.mp4a
+*.wav
+*.mkv
+*.avi
+*.tfevents.*
+*.tfrecord
+checkpoint
+*.meta
+*.index
+*.data*
+*.csv
+*.npy
+*.pth
+*.h5
+*.pickle
+*.pkl
+*.bytes
+*.tsv
+*.json
+
+# Editors
+.vscode/
+.idea/
+
+# Vagrant
+.vagrant/
+
+# Mac/OSX
+.DS_Store
+
+# Windows
+Thumbs.db
+
+=======
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -5,6 +43,7 @@ __pycache__/
 
 # C extensions
 *.so
+!utils/*.so
 
 # Distribution / packaging
 .Python
