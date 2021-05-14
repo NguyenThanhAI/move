@@ -13,8 +13,9 @@ from progress.bar import Bar
 
 import acoss
 
-from acoss import extractors
-from acoss.extractors import AudioFeatures
+#from acoss import extractors
+#from acoss.extractors import AudioFeatures
+from features import AudioFeatures
 
 
 def get_args():
@@ -54,20 +55,21 @@ def enumerate_h5_file(feature_dir: str):
     return file_list
 
 
-def compute_features(audio_path: str, params: dict):
+def compute_features(audio_path: str, params: dict, feature: AudioFeatures):
     start = time.time()
-    feature = AudioFeatures(audio_file=audio_path, sample_rate=params["sample_rate"])
+    #feature = AudioFeatures(audio_file=audio_path, sample_rate=params["sample_rate"])
+    feature.read_audio(audio_path)
     if feature.audio_vector.shape[0] == 0:
         raise IOError("Empty or invalid audio recording file -%s-" % audio_path)
     end = time.time()
-    print("1: {}".format(round(end - start, 3)), end=" ")
+    print("1: {}".format(end - start), end=" ")
     start = time.time()
     if params["endtime"]:
         feature.audio_vector = feature.audio_slicer(endTime=params["endtime"])
     if params["downsample_audio"]:
         feature.audio_vector = feature.resample_audio(params["sample_rate"] / params["downsample_factor"])
     end = time.time()
-    print("2: {}".format(round(end - start, 3)), end=" ")
+    print("2: {}".format(end - start), end=" ")
     start = time.time()
     out_dict = dict()
     # now we compute all the listed features in the profile dict and store the results to a output dictionary
@@ -75,7 +77,7 @@ def compute_features(audio_path: str, params: dict):
         assert method == "crema"
         out_dict[method] = getattr(feature, method)()
     end = time.time()
-    print("3: {}".format(round(end - start), 3), end=" ")
+    print("3: {}".format(end - start), end=" ")
 
     start = time.time()
     track_id = os.path.basename(audio_path).replace(params["input_audio_format"], "")
@@ -83,12 +85,12 @@ def compute_features(audio_path: str, params: dict):
 
     del feature
     end = time.time()
-    print("4: {}".format(round(end - start), 3))
+    print("4: {}".format(end - start))
 
     return out_dict
 
 
-def compute_features_from_list_file(audio_dir: str, file_list: list, feature_dir: str, params: dict):
+def compute_features_from_list_file(audio_dir: str, file_list: list, feature_dir: str, params: dict, feature: AudioFeatures):
     start_time = time.time()
 
     print("Length of file list before filtering: {}".format(len(file_list)))
@@ -112,7 +114,7 @@ def compute_features_from_list_file(audio_dir: str, file_list: list, feature_dir
 
     for song in tqdm(file_list):
         #try:
-        feature_dict = compute_features(audio_path=song, params=params)
+        feature_dict = compute_features(audio_path=song, params=params, feature=feature)
         rel_path = os.path.relpath(song, audio_dir)
         rel_dir = os.path.dirname(rel_path)
         save_dir = os.path.join(feature_dir, rel_dir)
@@ -140,7 +142,9 @@ if __name__ == '__main__':
               "endtime": None,
               "features": ["crema"]}
 
+    feature = AudioFeatures(sample_rate=params["sample_rate"])
+
     audio_files_list = enumerate_audio_file(audio_dir=args.audio_dir, audio_format=args.audio_format)
 
-    compute_features_from_list_file(audio_dir=args.audio_dir, file_list=audio_files_list, feature_dir=args.feature_dir, params=params)
+    compute_features_from_list_file(audio_dir=args.audio_dir, file_list=audio_files_list, feature_dir=args.feature_dir, params=params, feature=feature)
     #Parallel(n_jobs=4, verbose=1)(delayed(compute_features_from_list_file)(args.audio_dir, args.audio_format, params))
