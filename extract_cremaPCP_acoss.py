@@ -73,6 +73,8 @@ def compute_features(audio_path: str, params: dict):
     track_id = os.path.basename(audio_path).replace(params["input_audio_format"], "")
     out_dict["track_id"] = track_id
 
+    del feature
+
     return out_dict
 
 
@@ -94,9 +96,9 @@ def compute_features_from_list_file(audio_dir: str, file_list: list, feature_dir
 
     print("Number of file list after filtering file been extracted cremaPCP: {}".format(len(file_list)))
 
-    progress_bar = Bar("acoss.extractor.compute_features_from_list_file",
-                       max=len(file_list),
-                       suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
+    #progress_bar = Bar("acoss.extractor.compute_features_from_list_file",
+    #                   max=len(file_list),
+    #                   suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
 
     for song in tqdm(file_list):
         #try:
@@ -110,8 +112,8 @@ def compute_features_from_list_file(audio_dir: str, file_list: list, feature_dir
         #except Exception as e:
         #    print("Error {} for computing features for audio file {}".format(e, song))
         #    continue
-        progress_bar.next()
-    progress_bar.finish()
+        #progress_bar.next()
+    #progress_bar.finish()
     print("Process finished in {} seconds".format(time.time() - start_time))
 
 
