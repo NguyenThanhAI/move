@@ -35,7 +35,7 @@ def enumerate_audio_file(audio_dir: str, audio_format="mp3"):
         for file in files:
             #print("file: {}".format(file))
             if file.endswith(audio_format):
-                audio_files.append(os.path.join(audio_dir, file))
+                audio_files.append(os.path.join(dirs, file))
 
     audio_files.sort(key=lambda x: os.path.splitext(os.path.basename(x))[0])
 
