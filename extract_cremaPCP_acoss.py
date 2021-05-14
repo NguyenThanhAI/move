@@ -37,7 +37,21 @@ def enumerate_audio_file(audio_dir: str, audio_format="mp3"):
             if file.endswith(audio_format):
                 audio_files.append(os.path.join(audio_dir, file))
 
+    audio_files.sort(key=lambda x: os.path.splitext(os.path.basename(x))[0])
+
     return audio_files
+
+
+def enumerate_h5_file(feature_dir: str):
+    file_list = []
+    for dirs, _, files in os.walk(feature_dir):
+        for file in files:
+            if file.endswith(".h5"):
+                file_list.append(os.path.join(dirs, file))
+
+    file_list.sort(key=lambda x: os.path.splitext(os.path.basename(x))[0])
+
+    return file_list
 
 
 def compute_features(audio_path: str, params: dict):
@@ -70,6 +84,15 @@ def compute_features_from_list_file(file_list: list, feature_dir: str, params: d
     print("Length of file list after filtering: {}".format(len(file_list)))
 
     assert len(file_list) > 0
+
+    h5_list = enumerate_h5_file(feature_dir)
+    h5_list = list(map(lambda x: os.path.splitext(os.path.basename(x))[0], h5_list))
+
+    print("Number of extracted h5 file: {}".format(len(h5_list)))
+
+    file_list = list(filter(lambda x: os.path.splitext(os.path.basename(x))[0] not in h5_list, file_list))
+
+    print("Number of file list after filtering file been extracted cremaPCP: {}".format(len(file_list)))
 
     progress_bar = Bar("acoss.extractor.compute_features_from_list_file",
                        max=len(file_list),
