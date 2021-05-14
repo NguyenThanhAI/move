@@ -76,7 +76,7 @@ def compute_features(audio_path: str, params: dict):
     return out_dict
 
 
-def compute_features_from_list_file(file_list: list, feature_dir: str, params: dict):
+def compute_features_from_list_file(audio_dir: str, file_list: list, feature_dir: str, params: dict):
     start_time = time.time()
 
     print("Length of file list before filtering: {}".format(len(file_list)))
@@ -101,7 +101,12 @@ def compute_features_from_list_file(file_list: list, feature_dir: str, params: d
     for song in tqdm(file_list):
         #try:
         feature_dict = compute_features(audio_path=song, params=params)
-        dd.io.save(os.path.join(feature_dir, os.path.splitext(os.path.basename(song))[0] + ".h5"), feature_dict)
+        rel_path = os.path.relpath(song, audio_dir)
+        rel_dir = os.path.dirname(rel_path)
+        save_dir = os.path.join(feature_dir, rel_dir)
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir, exist_ok=True)
+        dd.io.save(os.path.join(save_dir, os.path.splitext(os.path.basename(song))[0] + ".h5"), feature_dict)
         #except Exception as e:
         #    print("Error {} for computing features for audio file {}".format(e, song))
         #    continue
@@ -125,5 +130,5 @@ if __name__ == '__main__':
 
     audio_files_list = enumerate_audio_file(audio_dir=args.audio_dir, audio_format=args.audio_format)
 
-    compute_features_from_list_file(file_list=audio_files_list, feature_dir=args.feature_dir, params=params)
+    compute_features_from_list_file(audio_dir=args.audio_dir, file_list=audio_files_list, feature_dir=args.feature_dir, params=params)
     #Parallel(n_jobs=4, verbose=1)(delayed(compute_features_from_list_file)(args.audio_dir, args.audio_format, params))
