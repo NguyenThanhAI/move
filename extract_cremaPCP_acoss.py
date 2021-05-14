@@ -56,36 +56,35 @@ def enumerate_h5_file(feature_dir: str):
 
 
 def compute_features(audio_path: str, params: dict, feature: AudioFeatures):
-    start = time.time()
+    #start = time.time()
     #feature = AudioFeatures(audio_file=audio_path, sample_rate=params["sample_rate"])
     feature.read_audio(audio_path)
     if feature.audio_vector.shape[0] == 0:
         raise IOError("Empty or invalid audio recording file -%s-" % audio_path)
-    end = time.time()
-    print("1: {}".format(end - start), end=" ")
-    start = time.time()
+    #end = time.time()
+    #print("1: {}".format(end - start), end=" ")
+    #start = time.time()
     if params["endtime"]:
         feature.audio_vector = feature.audio_slicer(endTime=params["endtime"])
     if params["downsample_audio"]:
         feature.audio_vector = feature.resample_audio(params["sample_rate"] / params["downsample_factor"])
-    end = time.time()
-    print("2: {}".format(end - start), end=" ")
-    start = time.time()
+    #end = time.time()
+    #print("2: {}".format(end - start), end=" ")
+    #start = time.time()
     out_dict = dict()
     # now we compute all the listed features in the profile dict and store the results to a output dictionary
     for method in params["features"]:
         assert method == "crema"
         out_dict[method] = getattr(feature, method)()
-    end = time.time()
-    print("3: {}".format(end - start), end=" ")
+    #end = time.time()
+    #print("3: {}".format(end - start), end=" ")
 
-    start = time.time()
+    #start = time.time()
     track_id = os.path.basename(audio_path).replace(params["input_audio_format"], "")
     out_dict["track_id"] = track_id
 
-    del feature
-    end = time.time()
-    print("4: {}".format(end - start))
+    #end = time.time()
+    #print("4: {}".format(end - start))
 
     return out_dict
 
