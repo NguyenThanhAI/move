@@ -112,17 +112,17 @@ def compute_features_from_list_file(audio_dir: str, file_list: list, feature_dir
     #                   suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
 
     for song in tqdm(file_list):
-        #try:
-        feature_dict = compute_features(audio_path=song, params=params, feature=feature)
-        rel_path = os.path.relpath(song, audio_dir)
-        rel_dir = os.path.dirname(rel_path)
-        save_dir = os.path.join(feature_dir, rel_dir)
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir, exist_ok=True)
-        dd.io.save(os.path.join(save_dir, os.path.splitext(os.path.basename(song))[0] + ".h5"), feature_dict)
-        #except Exception as e:
-        #    print("Error {} for computing features for audio file {}".format(e, song))
-        #    continue
+        try:
+            feature_dict = compute_features(audio_path=song, params=params, feature=feature)
+            rel_path = os.path.relpath(song, audio_dir)
+            rel_dir = os.path.dirname(rel_path)
+            save_dir = os.path.join(feature_dir, rel_dir)
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir, exist_ok=True)
+            dd.io.save(os.path.join(save_dir, os.path.splitext(os.path.basename(song))[0] + ".h5"), feature_dict)
+        except Exception as e:
+            print("Error {} for computing features for audio file {}".format(e, song))
+            continue
         #progress_bar.next()
     #progress_bar.finish()
     print("Process finished in {} seconds".format(time.time() - start_time))
